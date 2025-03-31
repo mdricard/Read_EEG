@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.io as sio
 
-fn = 'D:/Biological Python Data/AA001_clean_eeg.mat'
+fn = 'C:/Data/AA001_clean_eeg.mat'
 data = sio.loadmat(fn)
 eeg = np.array(data['eeg'])
 c1 = eeg[:, 0]
@@ -67,14 +67,49 @@ c59 = eeg[:, 58]
 c60 = eeg[:, 59]
 c61 = eeg[:, 60]
 c62 = eeg[:, 61]
-fn = 'D:/Biological Python Data/AA001_clean_events.mat'
+
+def get_channel_max(c1):
+    """
+    This function gets the max of an eec channel
+    :param c1: input eeg channel
+    :return: max
+    """
+    c1_max = c1[0]
+    for i in range(1, len(c1)):
+        if c1[i] > c1_max:
+            c1_max = c1[i]
+            max_pt = i
+    return c1_max, max_pt
+
+def plot_eeg(c1_mean, c1_max, max_pt):
+    plt.plot(c1)
+    plt.hlines(c1_mean, 0, len(c1), colors='k', linestyles='solid')
+    #plt.scatter(max_pt, c1_mean, size=3, color='r')
+    plt.scatter(max_pt, c1_max, s=10, color='r')
+    plt.ylabel('EEG Signal')
+    plt.xlabel('Time')
+    plt.grid(True)
+    plt.show()
+
+def get_channel_mean(channel):
+    sum = 0.0
+    cntr = 0
+    for i in range(len(channel)):
+        sum += channel[i]
+        cntr += 1
+    mean_eeg = sum / cntr
+    return mean_eeg
+
+fn = 'C:/Data/AA001_clean_events.mat'
 ev = sio.loadmat(fn)
 events = np.array(ev['rawEvents'])
-plt.plot(c1)
-plt.ylabel('EEG Signal')
-plt.xlabel('Time')
-plt.grid(True)
-plt.show()
+
+c1_mean = get_channel_mean(c1)
+print('Channel 1 mean: ', c1_mean)
+print(ev)
+c1_correct = c1 - c1_mean
+c1_max, max_pt = get_channel_max(c1)
+plot_eeg(c1_mean, c1_max, max_pt)
 
 
 
